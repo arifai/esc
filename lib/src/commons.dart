@@ -79,19 +79,14 @@ Future<void> ensureConfigDir() async {
 
   if (!await dir.exists()) {
     await dir.create();
-    print(green.wrap('Successfuly creating configuraton directory.'));
-    if (!await file.exists()) {
-      await file.create();
-      await file.writeAsString('configs:');
-      print(green.wrap('Successfuly creating configuraton file.'));
-    } else {
-      print(red.wrap('Failed to create configuration file.'));
-    }
-  } else {
     await file.create();
-    await file.writeAsString('configs:');
-    print(green.wrap('Successfuly creating configuraton file.'));
+    await file.writeAsString('configs:', mode: FileMode.writeOnly);
+    print(green.wrap('Successfuly creating configuraton directory & file.'));
+  } else {
+    print(yellow.wrap('Failed to create configuration directory & file.'));
   }
+
+  return;
 }
 
 Future<List<ConfigEntity>> readConfigFile() async {
