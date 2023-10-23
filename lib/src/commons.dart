@@ -14,15 +14,17 @@ abstract class ESCCommand extends Command<void> {}
 final String configDir = '$_homeDir/.esc';
 final String configFile = 'esc-config.yaml';
 final File file = File('$configDir/$configFile');
+final String warning =
+    'Please run `esc init` command first to create configuration.';
 
 void connectSSH({
   required String username,
   required String host,
   required String password,
-  int? port,
+  required int port,
 }) async {
   try {
-    final SSHSocket socket = await SSHSocket.connect(host, port ?? 22);
+    final SSHSocket socket = await SSHSocket.connect(host, port);
     final SSHClient client = SSHClient(
       socket,
       username: username,
@@ -37,7 +39,6 @@ void connectSSH({
     );
 
     stdin.echoMode = true;
-
     stdout.addStream(shell.stdout);
     stderr.addStream(shell.stderr);
     stdin.cast<Uint8List>().listen(shell.write);
@@ -49,13 +50,12 @@ void connectSSH({
     exit(0);
   } on SocketException catch (e) {
     print(red.wrap('${e.message}: ${e.address?.address}'));
-    exit(1);
+    exit(2);
   } catch (e) {
-    print('$e');
     print(
       red.wrap('Can not connect to SSH server, please check your credential.'),
     );
-    exit(1);
+    exit(2);
   }
 }
 
@@ -79,11 +79,17 @@ Future<void> ensureConfigDir() async {
 
   if (!await dir.exists()) {
     await dir.create();
+    print(green.wrap('Successfuly creating configuraton directory.'));
+  } else {
+    print(yellow.wrap('Configuration directory is already exists.'));
+  }
+
+  if (!await file.exists()) {
     await file.create();
     await file.writeAsString('configs:', mode: FileMode.writeOnly);
-    print(green.wrap('Successfuly creating configuraton directory & file.'));
+    print(green.wrap('Successfuly creating configuraton file.'));
   } else {
-    print(yellow.wrap('Failed to create configuration directory & file.'));
+    print(yellow.wrap('Configuration file is already exists.'));
   }
 
   return;
@@ -124,12 +130,10 @@ void writeConfig({
       flush: true,
     );
   } on PathNotFoundException catch (e) {
-    print(red.wrap(
-      '${e.osError?.message}. Try to creating configuration directory or file...',
-    ));
-    ensureConfigDir();
+    print(yellow.wrap('${e.osError?.message}. $warning'));
+    exit(1);
   } catch (e) {
     print(red.wrap('$e'));
-    exit(1);
+    exit(2);
   }
 }
