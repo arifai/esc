@@ -4,13 +4,18 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:esc/commands/add_command.dart';
 import 'package:esc/commands/config_entity.dart';
+import 'package:esc/commands/init_command.dart';
 import 'package:esc/commands/list_command.dart';
 import 'package:esc/src/commons.dart';
 import 'package:io/ansi.dart';
 
-final List<Command<void>> commands = [ListCommand(), AddCommand()];
+final List<Command<void>> commands = [
+  ListCommand(),
+  AddCommand(),
+  InitCommand(),
+];
 
-class ESCRunner extends CommandRunner<void> {
+final class ESCRunner extends CommandRunner<void> {
   ESCRunner() : super('esc', 'Easy SSH Connection.') {
     commands.forEach(addCommand);
     argParser
@@ -72,12 +77,11 @@ class ESCRunner extends CommandRunner<void> {
         password: item.password,
       );
     } on PathNotFoundException catch (e) {
-      print(red.wrap(
-        '${e.osError?.message}. Try to creating configuration directory or file...',
-      ));
-      ensureConfigDir();
+      print(yellow.wrap('${e.osError?.message}. $warning'));
+      exit(1);
     } catch (e) {
       print(red.wrap('No server with name $value.'));
+      exit(2);
     }
   }
 }
