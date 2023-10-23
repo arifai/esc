@@ -47,6 +47,9 @@ void connectSSH({
     await client.done;
 
     exit(0);
+  } on SocketException catch (e) {
+    print(red.wrap('${e.message} (${e.address?.address})'));
+    exit(1);
   } catch (e) {
     print('$e');
     print(
