@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:esc/commands/config_entity.dart';
 import 'package:esc/src/commons.dart';
@@ -16,11 +17,20 @@ class ListCommand extends ESCCommand {
   FutureOr<void>? run() async => _lsCommand();
 
   void _lsCommand() async {
-    final List<ConfigEntity> configs = await readConfigFile();
+    try {
+      final List<ConfigEntity> configs = await readConfigFile();
 
-    print(green.wrap('Available registered servers: \n'));
-    for (var conf in configs) {
-      print(conf.name);
+      print(green.wrap('Available registered servers: \n'));
+      for (var conf in configs) {
+        print(conf.name);
+      }
+    } on PathNotFoundException catch (e) {
+      print(red.wrap(
+        '${e.osError?.message}. Try to creating configuration directory or file...',
+      ));
+      ensureConfigDir();
+    } catch (e) {
+      print(red.wrap('$e'));
     }
   }
 }

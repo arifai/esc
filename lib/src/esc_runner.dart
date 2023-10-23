@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:esc/commands/add_command.dart';
@@ -69,6 +71,11 @@ class ESCRunner extends CommandRunner<void> {
         port: item.port,
         password: item.password,
       );
+    } on PathNotFoundException catch (e) {
+      print(red.wrap(
+        '${e.osError?.message}. Try to creating configuration directory or file...',
+      ));
+      ensureConfigDir();
     } catch (e) {
       print(red.wrap('No server with name $value.'));
     }

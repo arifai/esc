@@ -48,7 +48,7 @@ void connectSSH({
 
     exit(0);
   } on SocketException catch (e) {
-    print(red.wrap('${e.message} (${e.address?.address})'));
+    print(red.wrap('${e.message}: ${e.address?.address}'));
     exit(1);
   } catch (e) {
     print('$e');
@@ -79,22 +79,27 @@ Future<void> ensureConfigDir() async {
 
   if (!await dir.exists()) {
     await dir.create();
-    if (!await file.exists()) await file.create();
+    print(green.wrap('Successfuly creating configuraton directory.'));
+    if (!await file.exists()) {
+      await file.create();
+      await file.writeAsString('configs:');
+      print(green.wrap('Successfuly creating configuraton file.'));
+    } else {
+      print(red.wrap('Failed to create configuration file.'));
+    }
   } else {
     await file.create();
+    await file.writeAsString('configs:');
+    print(green.wrap('Successfuly creating configuraton file.'));
   }
 }
 
 Future<List<ConfigEntity>> readConfigFile() async {
-  try {
-    final String yamlString = file.readAsStringSync();
-    final YamlMap doc = loadYaml(yamlString);
-    final List<ConfigEntity> configs = ConfigEntity.encode(doc);
+  final String yamlString = file.readAsStringSync();
+  final YamlMap doc = loadYaml(yamlString);
+  final List<ConfigEntity> configs = ConfigEntity.encode(doc);
 
-    return configs;
-  } catch (e) {
-    rethrow;
-  }
+  return configs;
 }
 
 void writeConfig({
@@ -123,8 +128,13 @@ void writeConfig({
       mode: FileMode.append,
       flush: true,
     );
+  } on PathNotFoundException catch (e) {
+    print(red.wrap(
+      '${e.osError?.message}. Try to creating configuration directory or file...',
+    ));
+    ensureConfigDir();
   } catch (e) {
-    print(red.wrap('Can not add configuration with error: $e'));
+    print(red.wrap('$e'));
     exit(1);
   }
 }
