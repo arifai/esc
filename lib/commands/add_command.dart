@@ -4,7 +4,7 @@ import 'package:args/args.dart';
 import 'package:esc/src/commons.dart';
 import 'package:io/ansi.dart';
 
-class AddCommand extends ESCCommand {
+final class AddCommand extends ESCCommand {
   AddCommand() {
     argParser
       ..addOption(

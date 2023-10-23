@@ -5,7 +5,7 @@ import 'package:esc/commands/config_entity.dart';
 import 'package:esc/src/commons.dart';
 import 'package:io/ansi.dart';
 
-class ListCommand extends ESCCommand {
+final class ListCommand extends ESCCommand {
   @override
   String get name => 'ls';
 
@@ -20,17 +20,16 @@ class ListCommand extends ESCCommand {
     try {
       final List<ConfigEntity> configs = await readConfigFile();
 
-      print(green.wrap('Available registered servers: \n'));
+      print(green.wrap('Available registered servers:\n'));
       for (var conf in configs) {
         print(conf.name);
       }
     } on PathNotFoundException catch (e) {
-      print(red.wrap(
-        '${e.osError?.message}. Try to creating configuration directory or file...',
-      ));
-      ensureConfigDir();
+      print(yellow.wrap('${e.osError?.message}. $warning'));
+      exit(1);
     } catch (e) {
       print(red.wrap('$e'));
+      exit(2);
     }
   }
 }

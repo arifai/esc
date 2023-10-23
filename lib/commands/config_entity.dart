@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 import 'package:yaml/yaml.dart';
 
-class ConfigEntity extends Equatable {
+final class ConfigEntity extends Equatable {
   const ConfigEntity({
     required this.name,
     required this.username,
     required this.host,
     required this.password,
-    this.port,
+    required this.port,
   });
 
   final String name;
   final String username;
   final String host;
   final String password;
-  final int? port;
+  final int port;
 
   factory ConfigEntity._encode(YamlMap doc) {
     if (doc
@@ -23,7 +23,7 @@ class ConfigEntity extends Equatable {
           'username': String username,
           'host': String host,
           'password': String password,
-          'port': int? port
+          'port': int port
         }) {
       return ConfigEntity(
         name: name,
