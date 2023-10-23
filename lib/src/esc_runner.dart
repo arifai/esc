@@ -36,16 +36,16 @@ class ESCRunner extends CommandRunner<void> {
   @override
   Future<void> runCommand(topLevelResults) async {
     final ArgResults results = parse(topLevelResults.arguments);
-    final bool version = topLevelResults.wasParsed('version');
-    final bool name = topLevelResults.wasParsed('name');
-    final bool verbose = topLevelResults['verbose'] as bool;
+    final bool version = results.wasParsed('version');
+    final bool name = results.wasParsed('name');
+    final bool verbose = results['verbose'] as bool;
 
     if (version) print('Version: 1.0.0');
 
     if (name) _runSsh('${results['name']}');
 
     try {
-      await super.runCommand(topLevelResults);
+      await super.runCommand(results);
     } catch (e, s) {
       if (verbose) {
         print(e);

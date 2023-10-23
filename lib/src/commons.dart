@@ -32,7 +32,9 @@ void connectSSH({
         return password;
       },
     );
-    final SSHSession shell = await client.shell();
+    final SSHSession shell = await client.shell(
+      pty: SSHPtyConfig(width: 100, height: 50),
+    );
 
     stdin.echoMode = true;
 
@@ -47,8 +49,9 @@ void connectSSH({
     exit(0);
   } catch (e) {
     print('$e');
-    print(red
-        .wrap('Can not connect to SSH server, please check your credential.'));
+    print(
+      red.wrap('Can not connect to SSH server, please check your credential.'),
+    );
     exit(1);
   }
 }
@@ -98,22 +101,27 @@ void writeConfig({
   required String password,
   int? port,
 }) async {
-  final YamlEditor editor = YamlEditor(file.readAsStringSync());
-  editor.update([
-    'configs'
-  ], [
-    {
-      'name': name,
-      'host': host,
-      'username': username,
-      'password': password,
-      'port': port,
-    }
-  ]);
+  try {
+    final YamlEditor editor = YamlEditor(file.readAsStringSync());
+    editor.update([
+      'configs'
+    ], [
+      {
+        'name': name,
+        'host': host,
+        'username': username,
+        'password': password,
+        'port': port,
+      }
+    ]);
 
-  await file.writeAsString(
-    editor.edits.first.replacement,
-    mode: FileMode.append,
-    flush: true,
-  );
+    await file.writeAsString(
+      editor.edits.first.replacement,
+      mode: FileMode.append,
+      flush: true,
+    );
+  } catch (e) {
+    print(red.wrap('Can not add configuration with error: $e'));
+    exit(1);
+  }
 }

@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:args/args.dart';
 import 'package:esc/src/commons.dart';
+import 'package:io/ansi.dart';
 
 class AddCommand extends ESCCommand {
   AddCommand() {
@@ -52,34 +54,18 @@ class AddCommand extends ESCCommand {
   FutureOr<void>? run() async => _add();
 
   void _add() async {
-    final Map<String, dynamic> configs = {};
+    try {
+      final ArgResults results = argParser.parse(argResults!.arguments);
 
-    if (argResults!.wasParsed('name')) {
-      configs['name'] = argResults?['name'];
+      writeConfig(
+        name: results['name'],
+        host: results['host'],
+        username: results['username'],
+        password: results['password'],
+        port: int.tryParse(results['port']) ?? 22,
+      );
+    } catch (e) {
+      print(red.wrap('$e'));
     }
-
-    if (argResults!.wasParsed('host')) {
-      configs['host'] = argResults?['host'];
-    }
-
-    if (argResults!.wasParsed('username')) {
-      configs['username'] = argResults?['username'];
-    }
-
-    if (argResults!.wasParsed('password')) {
-      configs['password'] = argResults?['password'];
-    }
-
-    if (argResults!.wasParsed('port')) {
-      configs['port'] = int.tryParse(argResults?['port']);
-    }
-
-    writeConfig(
-      name: configs['name'],
-      host: configs['host'],
-      username: configs['username'],
-      password: configs['password'],
-      port: configs['port'] ?? 22,
-    );
   }
 }
