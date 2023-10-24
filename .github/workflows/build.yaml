@@ -8,11 +8,28 @@ on:
         required: true
 
 jobs:
-  build:
+  tag:
     permissions: write-all
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+    steps:
+      - name: Checkout ${{ github.ref }} branch in ${{ github.repository }} repository
+        uses: actions/checkout@v4
+
+      - name: Create a new tag
+        run: | 
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag ${{ github.event.inputs.version }}
+          git push origin ${{ github.event.inputs.version }}
+
+  compile:
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos]
     steps:
       - name: Checkout ${{ github.ref }} branch in ${{ github.repository }} repository
         uses: actions/checkout@v4
@@ -24,19 +41,12 @@ jobs:
       
       - name: Install dependencies
         run: dart pub get
-      
-      - name: Create a new tag
-        run: | 
-          git config user.name "GitHub Actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git tag ${{ github.event.inputs.version }}
-          git push origin ${{ github.event.inputs.version }}
 
-      - name: Ready to build
+      - name: Compile on ${{ matrix.os }}
         run: dart compile exe bin/esc.dart -o /tmp/esc
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.3
         with:
-          name: ${{ github.event.inputs.version }}
+          name: ${{ github.event.inputs.version }}-${{ matrix-os }}
           path: /tmp/esc
