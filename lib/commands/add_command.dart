@@ -56,13 +56,18 @@ final class AddCommand extends ESCCommand {
   void _add() async {
     try {
       final ArgResults results = argParser.parse(argResults!.arguments);
+      final String name = (results['name'] as String).trim();
+      final String host = (results['host'] as String).trim();
+      final String username = (results['username'] as String).trim();
+      final String password = (results['password'] as String).trim();
+      final String port = (results['port'] as String).trim();
 
       writeConfig(
-        name: results['name'],
-        host: results['host'],
-        username: results['username'],
-        password: results['password'],
-        port: int.tryParse(results['port']) ?? 22,
+        name: name,
+        host: host,
+        username: username,
+        password: password,
+        port: int.tryParse(port) ?? 22,
       );
     } catch (e) {
       print(red.wrap('$e'));
