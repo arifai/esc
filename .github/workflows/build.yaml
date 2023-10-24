@@ -25,7 +25,11 @@ jobs:
         run: dart pub get
       
       - name: Create a new tag
-        run: git tag ${{ github.event.inputs.version }}
+        run: | 
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag ${{ github.event.inputs.version }}
+          git push origin ${{ github.event.inputs.version }}
 
       - name: Ready to build
         run: dart compile exe bin/esc.dart -o /tmp/esc
