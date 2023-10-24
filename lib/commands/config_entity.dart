@@ -37,10 +37,16 @@ final class ConfigEntity extends Equatable {
     }
   }
 
-  static List<ConfigEntity> encode(YamlMap docs) {
-    return List<ConfigEntity>.from(
-      docs['configs'].map((e) => ConfigEntity._encode(e)),
-    );
+  static List<ConfigEntity> encode(YamlMap doc) {
+    final Iterable? configs = doc['configs'];
+
+    if (configs == null) {
+      return <ConfigEntity>[];
+    } else {
+      return List<ConfigEntity>.from(
+        configs.map((e) => ConfigEntity._encode(e)),
+      );
+    }
   }
 
   @override

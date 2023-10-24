@@ -20,9 +20,14 @@ final class ListCommand extends ESCCommand {
     try {
       final List<ConfigEntity> configs = await readConfigFile();
 
-      print(green.wrap('Available registered servers:\n'));
-      for (var conf in configs) {
-        print(conf.name);
+      if (configs.isEmpty) {
+        print(yellow.wrap(
+            'No registered servers. Please run `esc add` command to add a new server.'));
+      } else {
+        _printBanner('Available registered servers:');
+        for (var conf in configs) {
+          print(conf.name);
+        }
       }
     } on PathNotFoundException catch (e) {
       print(yellow.wrap('${e.osError?.message}. $warning'));
@@ -31,5 +36,10 @@ final class ListCommand extends ESCCommand {
       print(red.wrap('$e'));
       exit(2);
     }
+  }
+
+  void _printBanner(String message) async {
+    print(green.wrap(message));
+    print('-' * message.length);
   }
 }
