@@ -9,5 +9,5 @@ final class InitCommand extends ESCCommand {
   String get description => 'To initialize configuration file.';
 
   @override
-  FutureOr<void>? run() => ensureConfigDir();
+  FutureOr<void>? run() => ensureConfigDirFile();
 }

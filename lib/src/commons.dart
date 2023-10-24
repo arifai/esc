@@ -73,23 +73,23 @@ String? get _homeDir {
   }
 }
 
-Future<void> ensureConfigDir() async {
+Future<void> ensureConfigDirFile() async {
   final Directory dir = Directory(configDir);
   final File file = File('$configDir/$configFile');
 
   if (!await dir.exists()) {
     await dir.create();
-    print(green.wrap('Successfuly creating configuraton directory.'));
+    print(green.wrap('Successfuly creating config directory.'));
   } else {
-    print(yellow.wrap('Configuration directory is already exists.'));
+    print(yellow.wrap('Config directory is already exists in ${dir.path}.'));
   }
 
   if (!await file.exists()) {
     await file.create();
     await file.writeAsString('configs:', mode: FileMode.writeOnly);
-    print(green.wrap('Successfuly creating configuraton file.'));
+    print(green.wrap('Successfuly creating config file.'));
   } else {
-    print(yellow.wrap('Configuration file is already exists.'));
+    print(yellow.wrap('Config file is already exists in ${file.path}.'));
   }
 
   return;
@@ -112,6 +112,7 @@ void writeConfig({
 }) async {
   try {
     final YamlEditor editor = YamlEditor(file.readAsStringSync());
+
     editor.update([
       'configs'
     ], [

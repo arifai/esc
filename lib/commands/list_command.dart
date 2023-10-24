@@ -22,7 +22,7 @@ final class ListCommand extends ESCCommand {
 
       if (configs.isEmpty) {
         print(yellow.wrap(
-            'No registered servers. Please run `esc add` command to add a new server.'));
+            'There is no server listed. Please run `esc add -h` for further help usage.'));
       } else {
         _printBanner('Available registered servers:');
         for (var conf in configs) {
