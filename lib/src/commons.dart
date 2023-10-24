@@ -97,7 +97,7 @@ Future<void> ensureConfigDirFile() async {
 
 Future<List<ConfigEntity>> readConfigFile() async {
   final String yamlString = file.readAsStringSync();
-  final YamlMap doc = loadYaml(yamlString);
+  final YamlMap? doc = loadYaml(yamlString);
   final List<ConfigEntity> configs = ConfigEntity.encode(doc);
 
   return configs;

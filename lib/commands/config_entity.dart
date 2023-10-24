@@ -16,7 +16,7 @@ final class ConfigEntity extends Equatable {
   final String password;
   final int port;
 
-  factory ConfigEntity._encode(YamlMap doc) {
+  factory ConfigEntity._encode(YamlMap? doc) {
     if (doc
         case {
           'name': String name,
@@ -37,8 +37,8 @@ final class ConfigEntity extends Equatable {
     }
   }
 
-  static List<ConfigEntity> encode(YamlMap doc) {
-    final Iterable? configs = doc['configs'];
+  static List<ConfigEntity> encode(YamlMap? doc) {
+    final Iterable? configs = doc?['configs'];
 
     if (configs == null) {
       return <ConfigEntity>[];
