@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:esc/src/commons.dart';
@@ -9,7 +10,7 @@ final class AddCommand extends ESCCommand {
     argParser
       ..addOption(
         'name',
-        abbr: 'N',
+        abbr: 'n',
         mandatory: true,
         valueHelp: 'ssh_name',
         help: 'To provide your SSH name.',
@@ -62,15 +63,24 @@ final class AddCommand extends ESCCommand {
       final String password = (results['password'] as String).trim();
       final String port = (results['port'] as String).trim();
 
-      writeConfig(
-        name: name,
-        host: host,
-        username: username,
-        password: password,
-        port: int.tryParse(port) ?? 22,
-      );
+      if (await serverExists(name, host)) {
+        print(yellow.wrap('The name or host is already registered.'));
+      } else {
+        writeConfig(
+          name: name,
+          host: host,
+          username: username,
+          password: password,
+          port: int.tryParse(port) ?? 22,
+        );
+        print(green.wrap('Success'));
+      }
+    } on PathNotFoundException catch (e) {
+      print(yellow.wrap('${e.osError?.message}. $warning'));
+      exit(1);
     } catch (e) {
       print(red.wrap('$e'));
+      exit(2);
     }
   }
 }

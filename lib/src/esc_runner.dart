@@ -36,7 +36,7 @@ final class ESCRunner extends CommandRunner<void> {
         abbr: 'n',
         mandatory: true,
         valueHelp: 'ssh_name',
-        help: 'Use your SSH name inside `$configFile` file.',
+        help: 'Connects SSH based on the registered name.',
       );
   }
 

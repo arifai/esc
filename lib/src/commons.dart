@@ -103,6 +103,22 @@ Future<List<ConfigEntity>> readConfigFile() async {
   return configs;
 }
 
+/// Checking whether the server is listed in the configuration or not.
+Future<bool> serverExists(String name, String host) async {
+  final List<ConfigEntity> configs = await readConfigFile();
+  late bool exists = false;
+
+  for (var e in configs) {
+    if (e.name.contains(name) || e.host.contains(host)) {
+      exists = true;
+    } else {
+      exists = false;
+    }
+  }
+
+  return exists;
+}
+
 void writeConfig({
   required String name,
   required String host,
