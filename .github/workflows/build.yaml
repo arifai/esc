@@ -7,6 +7,9 @@ on:
         description: Release version
         required: true
 
+env:
+  TARGET: ${{ matrix.os }}/compiled
+
 jobs:
   tag:
     permissions: write-all
@@ -34,6 +37,9 @@ jobs:
       - name: Checkout ${{ github.ref }} branch in ${{ github.repository }} repository
         uses: actions/checkout@v4
 
+      - name: Create target directory for ${{ matrix.os }} 
+        run: mkdir -p $TARGET
+
       - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1.6.0
         with:
@@ -44,11 +50,11 @@ jobs:
 
       - name: Compile on ${{ matrix.os }}
         run: |
-          dart compile exe bin/esc.dart -o /tmp/esc
-          chmod 755 /tmp/esc
+          dart compile exe bin/esc.dart -o $TARGET/esc
+          chmod 755 $TARGET/esc
 
       - name: Upload artifact for ${{ matrix.os }}
         uses: actions/upload-artifact@v3.1.3
         with:
           name: ${{ github.event.inputs.version }}-${{ matrix.os }}
-          path: /tmp/esc
+          path: $TARGET/esc
