@@ -11,7 +11,7 @@ executables:
   esc: esc
 
 dependencies:
-  args: ^2.4.2
+  args: ^2.5.0
   dartssh2: 
     git:
       url: https://github.com/anyliker/dartssh2.git
